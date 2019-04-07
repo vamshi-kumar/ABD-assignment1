@@ -1,0 +1,27 @@
+###Q1)Load batting.csv into a mysql in a database battingdb and table batting.
+
+create database battingdb;
+use battingdb;
+
+create table batting(playerID varchar(30),yearID int,stint int,teamID varchar(10),lgID varchar(10),G int,G_batting int,AB int,R int,H int,2B int,3B int,HR int,RBI int,SB int,CS int,BB int,SO int,IBB int,HBP int,SH int,SF int,GIDP int,G_old int);
+
+Load data infile '/home/cloudera/Lab/DataFiles/Batting1.csv' into table batting fields terminated by ',' Lines terminated by '\n';
+
+
+###Q2)Sqoop the details into hdfs.
+
+sqoop import --connect jdbc:mysql://localhost/battingdb --username root --password cloudera --table batting --m 1
+hadoop fs -cat /user/cloudera/batting/part-m-00000;
+
+
+###Q3)Sqoop the details into hive.
+
+type command 
+>>hive;
+
+create database battingdb;
+use battingdb;
+
+create table batting2(playerID STRING,yearID int,stint int,teamID STRING,lgID STRING,G int,G_batting int,AB int,R int,H int,B2 int,B3 int,HR int,RBI int,SB int,CS int,BB int,SO int,IBB int,HBP int,SH int,SF int,GIDP int,G_old int) row format delimited fields terminated by ',' stored as textfile;
+
+LOAD DATA LOCAL INPATH '/home/cloudera/Lab/DataFiles/Batting1.csv' into table batting;

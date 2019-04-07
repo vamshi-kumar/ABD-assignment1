@@ -1,0 +1,19 @@
+######9)Using hive,partition by year. Then, find the year wise count of participants, 
+find the total votes got by the players.
+
+
+create table halloffame(hofID STRING, yearid INT, votedBy STRING, ballots INT, needed INT, votes INT,inducted STRING, category STRING, needed_note STRING) row format delimited fields terminated by ',' stored as textfile;
+
+LOAD DATA LOCAL INPATH '/home/cloudera/Lab/DataFiles/HallOfFame.csv' into table halloffame;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+set hive.enforce.bucketing=true;
+
+create table halloffame_part hof(hofID STRING, votedBy STRING, ballots INT, needed INT, votes INT,inducted STRING, category STRING, needed_note STRING) partitioned by(yearid INT) row format delimited fields terminated by ',' lines terminated by '\n';
+
+from halloffame hof INSERT OVERWRITE TABLE halloffame_part PARTITION(yearid) select hof.hofID, hof.votedBy, hof.ballots, hof.needed, hof.votes, hof.inducted, hof.category, hof.needed_note, hof.yearid  DISTRIBUTE BY yearid;
+
+select yearid, count(hofid) from halloffame_part group by yearid;
+
+select hofid, sum(votes) from halloffame_part group by hofid;

@@ -1,0 +1,67 @@
+8)From halloffame.csv
+
+######a)List the managers.
+
+from mrjob.job import MRJob
+
+class MRmyjob(MRJob):
+    def mapper(self,_,line):
+        data = line.split(',')
+        hofid = data[0].strip()
+        manager_list = data[7].strip()
+        if manager_list == 'Manager':
+            
+            yield hofid,None
+
+    def reducer(self, key, list_of_values):
+        yield "manager",key
+
+if __name__ == '__main__':
+    MRmyjob.run();
+
+
+
+######b)Find the numbers of votes got year wise by "chancfr01h".
+
+from mrjob.job import MRJob
+
+class MRmyjob(MRJob):
+    def mapper(self,_,line):
+        
+        data = line.split(',')
+        hofid = data[0].strip()
+        year = data[1].strip()
+        votes = data[5].strip()
+        if hofid == 'chancfr01h':
+            try:
+                yield year,int(votes)
+            except:
+                yield year,0
+
+    def reducer(self, key, list_of_values):
+        yield key,sum(list_of_values)
+
+if __name__ == '__main__':
+	MRmyjob.run();
+
+######c)Count the votes got by each person overall.
+
+from mrjob.job import MRJob
+
+class MRmyjob(MRJob):
+    def mapper(self,_,line):
+
+        data = line.split(',')
+        hofid = data[0].strip()
+
+        votes = data[5].strip()
+        try:
+            yield hofid,int(votes)
+        except:
+            yield hofid,0
+    
+    def reducer(self,key,list_of_values):
+        yield key,sum(list_of_values)
+
+if __name__ == '__main__':
+    MRmyjob.run();
